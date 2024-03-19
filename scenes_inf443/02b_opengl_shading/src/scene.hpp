@@ -18,8 +18,14 @@ struct gui_parameters {
 
 	vec3 light_color = { 1,1,1 };
 	vec3 light_position = { -2, 2, 2 };
+	vec3 fog_color = {1,1,1};
 
-	float ambiant = 1.0f;
+	float ambiant = .3f;
+	float diffus = .8f;
+	float specular = 1.f;
+	float s_exp = 1.f;
+	float d_max_fog = 8.f;
+	float d_max_light = 4.f;
 };
 
 // The structure of the custom scene

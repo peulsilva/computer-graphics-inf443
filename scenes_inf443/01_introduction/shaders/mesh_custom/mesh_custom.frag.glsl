@@ -34,7 +34,6 @@ uniform mat4 view;       // View matrix (rigid transform) of the camera - to com
 
 uniform vec3 light; // position of the light
 
-uniform float time;
 
 
 
@@ -129,9 +128,6 @@ void main()
 	
 	// Output color, with the alpha component
 
-	if (cos(25.0 * fragment.position.z+3.0*time) < -0.5f) {
-		discard;
-	}
-	else
-	FragColor = abs(cos(time)) * vec4(color_shading, material.alpha * color_image_texture.a);
+	// Déformez le maillage en fonction du temps
+    FragColor = vec4(1.0, 0.0, 0.0, 0.0);
 }

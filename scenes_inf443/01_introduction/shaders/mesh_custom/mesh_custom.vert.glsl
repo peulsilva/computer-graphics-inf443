@@ -22,6 +22,9 @@ uniform mat4 model; // Model affine transform matrix associated to the current s
 uniform mat4 view;  // View matrix (rigid transform) of the camera
 uniform mat4 projection; // Projection (perspective or orthogonal) matrix of the camera
 
+uniform float time;
+
+in vec3 vertexPosition;
 
 void main()
 {
@@ -43,5 +46,14 @@ void main()
 	fragment.uv = vertex_uv;
 
 	// gl_Position is a built-in variable which is the expected output of the vertex shader
-	gl_Position = position_projected; // gl_Position is the projected vertex position (in normalized device coordinates)
+	// gl_Position = position_projected; // gl_Position is the projected vertex position (in normalized device coordinates)
+
+	float offset = sin(time) * 0.1; // Par exemple, utilisez une fonction sinus pour créer une animation
+
+    // Modifiez les coordonnées du vertex en fonction du temps
+    vec3 newPosition = vertexPosition + vec3(offset, 0.0, 0.0); // Ajoutez l'offset temporel seulement sur l'axe x
+
+    // Utilisez la nouvelle position
+    gl_Position = vec4(newPosition, 1.0);
+
 }

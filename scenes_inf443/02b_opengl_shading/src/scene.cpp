@@ -92,8 +92,18 @@ void scene_structure::display_frame()
 
 	// Set additional uniform parameters to the shader
 	environment.uniform_generic.uniform_float["ambiant"] = gui.ambiant;
+	environment.uniform_generic.uniform_float["diffus"] = gui.diffus;
+	environment.uniform_generic.uniform_float["specular"] = gui.specular;
+	environment.uniform_generic.uniform_float["s_exp"] = gui.s_exp;
 	environment.uniform_generic.uniform_vec3["light_color"] = gui.light_color;
 	environment.uniform_generic.uniform_vec3["light_position"] = gui.light_position;
+	environment.uniform_generic.uniform_vec3["fog_color"] = gui.fog_color;
+	// environment.uniform_generic.uniform_vec3["fog_color"] = gui.light_color;
+
+	environment.uniform_generic.uniform_float["d_max_fog"] = gui.d_max_fog;
+	environment.uniform_generic.uniform_float["d_max_light"] = gui.d_max_light;
+	environment.background_color = gui.fog_color;
+
 
 	sphere_light.model.translation = gui.light_position;
 	sphere_light.material.color = gui.light_color * 0.8f;
@@ -134,9 +144,17 @@ void scene_structure::display_gui()
 	ImGui::Checkbox("Wireframe", &gui.display_wireframe);
 
 	ImGui::ColorEdit3("Light color", &gui.light_color[0]);
+	ImGui::ColorEdit3("Fog color", &gui.fog_color[0]);
 	ImGui::SliderFloat3("Light position", &gui.light_position[0], -3.0f, 3.0f);
-
+	
+	
+	ImGui::SliderFloat("Diffus", &gui.diffus, 0.f, 1.f);
 	ImGui::SliderFloat("Ambiant", &gui.ambiant, 0.0f, 1.0f);
+	ImGui::SliderFloat("Specular", &gui.specular, 0.f, 1.f);
+	ImGui::SliderFloat("s_exp", &gui.s_exp, 0.f, 256.f);
+	ImGui::SliderFloat("maximal distance fog", &gui.d_max_fog, 10.f, 50.f);
+	ImGui::SliderFloat("maximal distance light", &gui.d_max_light, 0.f, 10.f);
+
 }
 
 void scene_structure::mouse_move_event()
