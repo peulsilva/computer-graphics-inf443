@@ -12,6 +12,9 @@ using cgp::vec3;
 using cgp::numarray;
 using cgp::timer_basic;
 
+using namespace std;
+using namespace cgp;
+
 // Variables associated to the GUI
 struct gui_parameters {
 	bool display_frame = true;
@@ -38,6 +41,9 @@ struct scene_structure : cgp::scene_inputs_generic {
 	// ****************************** //
 
 	cgp::mesh_drawable terrain;
+	cgp::mesh_drawable tree;
+
+	vector<vec3> tree_position;
 
 
 

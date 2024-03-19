@@ -1,19 +1,35 @@
 
+// #include "<iostream>"
+// #include "<vector>"
 #include "terrain.hpp"
 
 
 using namespace cgp;
+using namespace std;
 
 // Evaluate 3D position of the terrain for any (x,y)
 float evaluate_terrain_height(float x, float y)
 {
-    vec2 p_0 = { 0, 0 };
-    float h_0 = 2.0f;
-    float sigma_0 = 3.0f;
 
-    float d = norm(vec2(x, y) - p_0) / sigma_0;
+    vector<vec2> p = { 
+        vec2{-10., -10.}, 
+        vec2{5.,5.}, 
+        vec2{-3.,4.}, 
+        vec2{6.,4.} 
+    };
+    vector<float> h = {3., -1.5, 1., 2.};
+    vector<float> sigma= {10. , 3., 4., 4.};
 
-    float z = h_0 * std::exp(-d * d);
+    float z = 0;
+    for (int i = 0; i < p.size(); i++){
+        float d = norm(
+            vec2(x,y) - p[i]
+        );
+
+        d = d/sigma[i];
+        
+        z+= h[i]* exp(-d*d);
+    }
 
     return z;
 }
@@ -61,9 +77,62 @@ mesh create_terrain_mesh(int N, float terrain_length)
         }
     }
 
+
+
     // need to call this function to fill the other buffer with default values (normal, color, etc)
 	terrain.fill_empty_field(); 
 
     return terrain;
 }
 
+bool is_valid_distance(
+    vec3& new_pos, 
+    vector<vec3>& positions, 
+    float min_distance    
+){
+    for (auto& p : positions){
+        float d = pow(p.x - new_pos.x, 2) + pow(p.y - new_pos.y, 2);
+        d = sqrt(d);
+
+        if (d < min_distance){
+            return false;
+        }
+    }
+
+    return true;
+}
+
+vector<vec3> generate_positions_on_terrain(
+    int N,
+    float terrain_length 
+){
+    vector<vec3> v;
+
+    for (int i =0; i < N; i++){
+        while (true){
+            float x = rand_uniform(
+                -terrain_length/2.,
+                terrain_length/2.
+            ) ;
+            float y = rand_uniform(
+                -terrain_length/2.,
+                terrain_length/2.
+            );
+
+            float z = evaluate_terrain_height(x,y);
+
+            vec3 new_pos = {x,y,z};
+            
+            if (is_valid_distance(new_pos, v, 1)){
+
+                v.push_back({x,y,z});
+                break;
+            }
+
+        }
+        
+
+    }
+
+    return v;
+}
