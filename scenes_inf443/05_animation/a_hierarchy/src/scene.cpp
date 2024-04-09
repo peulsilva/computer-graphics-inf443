@@ -26,6 +26,7 @@ void scene_structure::initialize()
 	mesh_drawable cylinder1;
 	mesh_drawable cube1;
 	mesh_drawable cylinder1_son;
+	mesh_drawable yellow_cylinder;
 
 	// Create the geometry of the meshes
 	//   Note: this geometry must be set in their local coordinates with respect to their position in the hierarchy (and with respect to their animation)
@@ -35,13 +36,19 @@ void scene_structure::initialize()
 	cylinder1.initialize_data_on_gpu(mesh_primitive_cylinder(0.05f, { 0,0,0 }, { 1.0f,0,0 }));
 	cube1.initialize_data_on_gpu(mesh_primitive_cube()); cube1.model.scaling = 0.15f;
 	cylinder1_son.initialize_data_on_gpu(mesh_primitive_cylinder(0.03f, { 0,0,-0.25f }, { 0.0f,0,0.25f }));
+	yellow_cylinder.initialize_data_on_gpu(
+		mesh_primitive_cylinder(0.03f, {0,0.2, 0}, {0, -0.2, 0})
+	);
 
 	// Set the color of some elements
 	vec3 color1 = { 0.8f, 0.5f, 0.7f };
+	const vec3 yellow = {1.0f, 1.0f, 0.};
 	cylinder1.material.color = color1;
 	cube1.material.color = color1;
 	cylinder1.material.color = color1;
 	cylinder1_son.material.color = color1;
+	yellow_cylinder.material.color = yellow;
+
 
 
 	// Add the elements in the hierarchy
@@ -55,6 +62,8 @@ void scene_structure::initialize()
 	hierarchy.add(cylinder1, "Cylinder1", "Sphere junction");
 	hierarchy.add(cube1, "Cube1", "Cylinder1", {1.0f,0,0}); // the translation is used to place the cube at the extremity of the cylinder
 	hierarchy.add(cylinder1_son, "Cylinder1 son", "Cube1");
+	hierarchy.add(yellow_cylinder, "Yellow cylinder1", "Cylinder1 son", {0,0, 0.25f});
+	hierarchy.add(yellow_cylinder, "Yellow cylinder2", "Cylinder1 son", {0,0, -0.25f});
 
 
 }
@@ -74,8 +83,11 @@ void scene_structure::display_frame()
 	timer.update();
 
 	// Apply transformation to some elements of the hierarchy
+	// hierarchy["Cylinder base"].transform_local.rotation
 	hierarchy["Cylinder1"].transform_local.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, timer.t);
 	hierarchy["Cube1"].transform_local.rotation = rotation_transform::from_axis_angle({ 1,0,0 }, -3 * timer.t);
+	hierarchy["Yellow cylinder1"].transform_local.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, -3 * timer.t);
+	hierarchy["Yellow cylinder2"].transform_local.rotation = rotation_transform::from_axis_angle({ 0,0,1 }, -3 * timer.t);
 
 
 	// This function must be called before the drawing in order to propagate the deformations through the hierarchy
