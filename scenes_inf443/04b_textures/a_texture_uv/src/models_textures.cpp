@@ -2,6 +2,7 @@
 #include "models_textures.hpp"
 
 using namespace cgp;
+using namespace std;
 
 mesh torus_with_texture()
 {
@@ -34,7 +35,11 @@ mesh torus_with_texture()
 
             // Store vertex coordinates
             torus.position[kv+N*ku] = p;
-            // torus.uv[kv+N*ku] = {...,...};
+            torus.uv[kv+N*ku] = {
+                v*10, u*4
+                // (a + b*std::cos(2* Pi *u))*std::cos(2* Pi *v),
+                // (a + b*std::cos(2* Pi *u))*std::sin(2* Pi *v)
+            };
         }
     }
 
@@ -86,7 +91,7 @@ mesh cylinder_with_texture()
 
             // Store vertex coordinates
             cylinder.position[kv+N*ku] = p;
-            // cylinder.uv[kv+N*ku] = ...
+            cylinder.uv[kv+N*ku] = {u,v};
         }
     }
 
@@ -116,18 +121,27 @@ mesh disc_with_texture()
 
 	mesh disc;
     int N = 20;
+    float len = 0.65f;
+    vec2 canto = {0.15f, 0.15f};
 
 	for (int k = 0; k < N; ++k)
 	{
 		float u = k/(N-1.0f);
 		vec3 p = r * vec3(std::cos(2* Pi *u), std::sin(2* Pi *u), 0.0f);
 		disc.position.push_back(p);
-        // disc.uv.push_back(...)
+        vec2 uv; 
+        if(u < 0.25) uv = {4*u, 0};
+        else if(u < 0.5) uv = {1, 4*(u-0.25)};
+        else if(u < 0.75) uv = {1-4*(u-0.5), 1};
+        else uv = {0, 1-4*(u-0.75)};
+        uv *= len;
+        uv += canto;
+        disc.uv.push_back(uv);
 		
 	}
 	// middle point
     disc.position.push_back({0,0,0});
-    // disc.uv.push_back(...)
+    disc.uv.push_back(vec2{0.5, 0.5}*len + canto); 
 
 	for (int k = 0; k < N-1; ++k)
 		disc.connectivity.push_back( uint3{ N, k, k+1});

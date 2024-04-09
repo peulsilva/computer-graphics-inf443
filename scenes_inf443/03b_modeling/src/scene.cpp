@@ -22,16 +22,30 @@ void scene_structure::initialize()
 
 	int N_terrain_samples = 100;
 	float terrain_length = 20;
-	mesh const terrain_mesh = create_terrain_mesh(N_terrain_samples, terrain_length);
+
+	terrain_mesh = create_terrain_mesh(N_terrain_samples, terrain_length);
+	// mesh terrain_mesh = create_naive_terrain(terrain_length);
 	terrain.initialize_data_on_gpu(terrain_mesh);
-	terrain.material.color = { 0.6f,0.85f,0.5f };
-	terrain.material.phong.specular = 0.0f; // non-specular terrain material
+	terrain.texture.load_and_initialize_texture_2d_on_gpu(
+		project::path + "assets/texture_grass.jpg",
+		GL_REPEAT,
+		GL_REPEAT
+	);
+
+	update_terrain(
+		terrain_mesh,
+		terrain,
+		parameters
+	);
+
+	// terrain.material.color = { 0.6f,0.85f,0.5f };
+	// terrain.material.phong.specular = 0.0f; // non-specular terrain material
 
 	mesh tree_mesh = create_tree();
 	tree.initialize_data_on_gpu(tree_mesh);
 
 	int n_trees = 100;
-	tree_position = generate_positions_on_terrain(n_trees, terrain_length);	
+	tree_position = generate_positions_on_terrain(n_trees, terrain_length, parameters);	
 	
 	// terrain.initialize_data_on_gpu(tree);
 	
@@ -47,8 +61,6 @@ void scene_structure::display_frame()
 	if (gui.display_frame)
 		draw(global_frame, environment);
 
-	draw(terrain, environment);
-
 	for (auto& position : tree_position){
 		tree.model.translation = position;
 		draw(tree, environment);
@@ -57,6 +69,8 @@ void scene_structure::display_frame()
 			draw_wireframe(tree, environment);
 		}
 	}
+
+	draw(terrain, environment);
 
 	if (gui.display_wireframe){
 		draw_wireframe(terrain, environment);
@@ -69,6 +83,17 @@ void scene_structure::display_gui()
 {
 	ImGui::Checkbox("Frame", &gui.display_frame);
 	ImGui::Checkbox("Wireframe", &gui.display_wireframe);
+
+	bool update = false;
+	update |= ImGui::SliderFloat("Persistance", &parameters.persistency, 0.f, 1.f);
+	update |= ImGui::SliderFloat("Frequency gain", &parameters.frequency_gain, 1.f, 2.5f);
+	update |= ImGui::SliderInt("Octave", &parameters.octave, 1, 8);
+	update |= ImGui::SliderFloat("Height", &parameters.terrain_height, 0.f, 1.5f);
+
+	if (update){// if any slider has been changed - then update the terrain
+		update_terrain(terrain_mesh, terrain, parameters);
+		
+	}
 }
 
 void scene_structure::mouse_move_event()

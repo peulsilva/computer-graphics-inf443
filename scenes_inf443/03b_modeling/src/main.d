@@ -129,7 +129,7 @@ src/main.o: src/main.cpp ../../cgp/library/cgp/cgp.hpp \
  ../../cgp/library/cgp/20_format_parser/mesh_loader/obj_advanced/obj_advanced.hpp \
  ../../cgp/library/cgp/21_scene_project_helper/scene_project_helper.hpp \
  ../../cgp/library/cgp/21_scene_project_helper/path/path.hpp \
- src/environment.hpp src/scene.hpp
+ src/environment.hpp src/scene.hpp src/terrain.hpp
 
 ../../cgp/library/cgp/cgp.hpp:
 
@@ -396,3 +396,5 @@ src/main.o: src/main.cpp ../../cgp/library/cgp/cgp.hpp \
 src/environment.hpp:
 
 src/scene.hpp:
+
+src/terrain.hpp:

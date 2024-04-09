@@ -22,23 +22,57 @@ void scene_structure::initialize()
 	// Create a quadrangle as a mesh
 	mesh quadrangle_mesh;
 	quadrangle_mesh.position = { {-1,-1,0}, { 1,-1,0}, { 1, 1,0}, {-1, 1,0} };
-	quadrangle_mesh.uv = { {0,0}, {1,0}, {1,1}, {0,1} }; // Associate Texture-Coordinates to the vertices of the quadrangle
+	quadrangle_mesh.uv = { {0,0}, {2,0}, {2,2}, {0,2} }; // Associate Texture-Coordinates to the vertices of the quadrangle
+	// quadrangle_mesh.uv = { {0,0}, {0.5,0}, {0.5,0.5}, {0,0.5} }; // Associate Texture-Coordinates to the vertices of the quadrangle
+
 	quadrangle_mesh.connectivity = { {0,1,2}, {0,2,3} };
 
 	quadrangle_mesh.fill_empty_field(); // (fill with some default values the other buffers (colors, normals) that we didn't filled before)
 
 
 	// Convert the mesh structure into a mesh_drawable structure
-	shape.initialize_data_on_gpu(quadrangle_mesh);
+	// shape.initialize_data_on_gpu(quadrangle_mesh);
+
+	mesh torus_mesh = torus_with_texture();
+	torus_shape.initialize_data_on_gpu(torus_mesh);
+	torus_shape.texture.load_and_initialize_texture_2d_on_gpu(project::path + "assets/smiley.png",
+		GL_REPEAT,
+		GL_REPEAT
+	);
+
+	mesh cylinder_mesh = cylinder_with_texture();
+	cylinder_shape.initialize_data_on_gpu(cylinder_mesh);
+	
+	cylinder_shape.texture.load_and_initialize_texture_2d_on_gpu(project::path + "assets/trunk.jpg",
+		GL_REPEAT,
+		GL_REPEAT
+	);
+	
+	float h = 4.;
+	mesh disc_mesh_up = disc_with_texture();
+	mesh disc_mesh_down = disc_with_texture();
+	disc_mesh_up.translate(0,0, h/2.);
+	disc_mesh_down.translate(0,0, -h/2.);
+
+	disc_up.initialize_data_on_gpu(disc_mesh_up);
+	disc_down.initialize_data_on_gpu(disc_mesh_down);
+
+	disc_down.texture.load_and_initialize_texture_2d_on_gpu(project::path + "assets/tree-ring.png",
+		GL_CLAMP_TO_EDGE,
+		GL_CLAMP_TO_EDGE
+	);
+
+	disc_up.texture.load_and_initialize_texture_2d_on_gpu(project::path + "assets/tree-ring.png",
+		GL_CLAMP_TO_EDGE,
+		GL_CLAMP_TO_EDGE
+	);
+
 
 
 	// Texture Image load and association
 	//-----------------------------------	
 
 	// Load an image from a file, and send the result to the GPU
-	shape.texture.load_and_initialize_texture_2d_on_gpu(project::path + "assets/squirrel.jpg",
-		GL_CLAMP_TO_BORDER,
-		GL_CLAMP_TO_BORDER);
 
 
 }
@@ -53,8 +87,17 @@ void scene_structure::display_frame()
 	if (gui.display_frame)
 		draw(global_frame, environment);
 
-	draw(shape, environment);
-	draw_wireframe(shape, environment, { 1,0,0 });
+		
+	// draw(torus_shape, environment);
+	draw(cylinder_shape, environment);
+	draw(disc_up, environment);
+	draw(disc_down, environment);
+
+	if (gui.display_wireframe){
+		draw_wireframe(shape, environment, { 1,0,0 });
+		draw_wireframe(torus_shape, environment, { 1,0,0 });
+		draw_wireframe(cylinder_shape, environment, { 1,0,0 });
+	}
 }
 
 void scene_structure::display_gui()
